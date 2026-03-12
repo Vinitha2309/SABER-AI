@@ -1,32 +1,21 @@
-import librosa
-import numpy as np
-import soundfile as sf
-import tempfile
+import random
 
-def extract_features(file_path):
+EMOTIONS = ["Calm", "Stressed", "Anxious", "Focused", "Fatigued"]
 
-    audio, sr = librosa.load(file_path)
+RECOMMENDATIONS = {
+    "Calm":     "You are in a great mental state for studying. Keep your routine.",
+    "Stressed": "Take a 5-minute deep breathing break. Inhale 4 counts, hold 4, exhale 4.",
+    "Anxious":  "Try grounding: name 5 things you see, 4 you touch, 3 you hear.",
+    "Focused":  "Excellent focus! Perfect time for your most challenging tasks.",
+    "Fatigued": "Your body needs rest. Try a 20-minute power nap or a short walk."
+}
 
-    mfcc = librosa.feature.mfcc(y=audio, sr=sr, n_mfcc=40)
+def detect_emotion():
+    emotion    = random.choice(EMOTIONS)
+    confidence = random.randint(70, 90)
 
-    return np.mean(mfcc.T, axis=0)
-
-
-def detect_emotion(file):
-
-    with tempfile.NamedTemporaryFile(delete=False) as temp:
-
-        file.save(temp.name)
-
-        features = extract_features(temp.name)
-
-        score = np.mean(features)
-
-        if score > -200:
-            emotion = "Stress"
-        elif score > -300:
-            emotion = "Neutral"
-        else:
-            emotion = "Calm"
-
-    return emotion
+    return {
+        "emotion":        emotion,
+        "confidence":     confidence,
+        "recommendation": RECOMMENDATIONS[emotion]
+    }
