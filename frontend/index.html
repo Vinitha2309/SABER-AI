@@ -1,51 +1,328 @@
-<html>
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>SABER-AI Student Stress Monitor</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SABER-AI — Student Burnout Prevention</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
 
-<h1>SABER-AI</h1>
-<h2>AI Student Burnout Detection System</h2>
+  <!-- ── SIDEBAR ──────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🧠</div>
+      <div>
+        <h1 class="logo-title">SABER<span>.AI</span></h1>
+        <p class="logo-sub">Study Assistant</p>
+      </div>
+    </div>
 
-<div class="container">
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" onclick="showPage('dashboard', this)">
+        <span class="nav-icon">📊</span> Dashboard
+      </a>
+      <a href="#" class="nav-item" onclick="showPage('predictor', this)">
+        <span class="nav-icon">🧬</span> Stress Predictor
+      </a>
+      <a href="#" class="nav-item" onclick="showPage('planner', this)">
+        <span class="nav-icon">📅</span> Study Planner
+      </a>
+      <a href="#" class="nav-item" onclick="showPage('emotion', this)">
+        <span class="nav-icon">🎙️</span> Voice Emotion
+      </a>
+      <a href="#" class="nav-item" onclick="showPage('history', this)">
+        <span class="nav-icon">📈</span> History
+      </a>
+    </nav>
 
-<h3>Stress Prediction</h3>
+    <div class="sidebar-badge">
+      <div class="badge-icon">🤖</div>
+      <p class="badge-title">AI Models Active</p>
+      <p class="badge-sub">Running at 100% efficiency</p>
+    </div>
+  </aside>
 
-<label>Study Hours</label>
-<input type="number" id="study">
+  <!-- ── MAIN CONTENT ──────────────────────────────────── -->
+  <main class="main">
 
-<label>Sleep Hours</label>
-<input type="number" id="sleep">
+    <!-- DASHBOARD PAGE -->
+    <div id="page-dashboard" class="page active">
+      <div class="page-header">
+        <div>
+          <h2 class="page-title">Student Dashboard</h2>
+          <p class="page-sub">Monitor your cognitive load and adapt your study habits.</p>
+        </div>
+        <button class="btn btn-outline" onclick="showPage('predictor', document.querySelectorAll('.nav-item')[1])">
+          ⚡ New Prediction
+        </button>
+      </div>
 
-<label>Deadlines</label>
-<input type="number" id="deadlines">
+      <div id="dashboard-empty" class="empty-state">
+        <div class="empty-icon">🧠</div>
+        <h3>No Data Available</h3>
+        <p>Run your first stress prediction to see results here.</p>
+        <button class="btn btn-primary" onclick="showPage('predictor', document.querySelectorAll('.nav-item')[1])">
+          Start Assessment
+        </button>
+      </div>
 
-<label>Typing Speed (WPM)</label>
-<input type="number" id="typing">
+      <div id="dashboard-data" style="display:none">
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(139,92,246,0.2);color:#8b5cf6">⚡</div>
+            <div>
+              <p class="stat-label">Stress Level</p>
+              <p class="stat-value" id="d-stress">—</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(59,130,246,0.2);color:#3b82f6">⏰</div>
+            <div>
+              <p class="stat-label">Study Load</p>
+              <p class="stat-value" id="d-study">—</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(16,185,129,0.2);color:#10b981">🌙</div>
+            <div>
+              <p class="stat-label">Sleep</p>
+              <p class="stat-value" id="d-sleep">—</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(168,85,247,0.2);color:#a855f7">😊</div>
+            <div>
+              <p class="stat-label">Mood</p>
+              <p class="stat-value" id="d-mood">—</p>
+            </div>
+          </div>
+        </div>
 
-<button onclick="predictStress()">Predict Stress</button>
+        <div class="card mt-8">
+          <h3 class="section-title">Burnout Risk</h3>
+          <div class="gauge-wrap">
+            <svg class="gauge" viewBox="0 0 200 200">
+              <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="16"/>
+              <circle id="gauge-circle" cx="100" cy="100" r="80" fill="none"
+                stroke="#8b5cf6" stroke-width="16" stroke-linecap="round"
+                stroke-dasharray="502" stroke-dashoffset="502"
+                transform="rotate(-90 100 100)" style="transition:stroke-dashoffset 1.2s ease"/>
+            </svg>
+            <div class="gauge-label">
+              <span id="d-burnout" class="gauge-value">0%</span>
+              <span class="gauge-sub">Burnout Risk</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<div id="stressResult"></div>
+    <!-- STRESS PREDICTOR PAGE -->
+    <div id="page-predictor" class="page">
+      <div class="page-header">
+        <div>
+          <h2 class="page-title">Stress Predictor</h2>
+          <p class="page-sub">Input your current metrics to forecast cognitive overload.</p>
+        </div>
+      </div>
 
-</div>
+      <div class="two-col">
+        <div class="card">
+          <h3 class="section-title">🧬 Current Metrics</h3>
+          <form id="stress-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Study Hours</label>
+                <input type="number" id="study-hours" min="0" max="24" step="0.5" value="5" required />
+              </div>
+              <div class="form-group">
+                <label>Sleep Hours</label>
+                <input type="number" id="sleep-hours" min="0" max="24" step="0.5" value="7" required />
+              </div>
+            </div>
 
-<div class="container">
+            <div class="form-group">
+              <label>Current Mood</label>
+              <select id="mood">
+                <option value="happy">Happy / Energized</option>
+                <option value="neutral" selected>Neutral / Okay</option>
+                <option value="sad">Sad / Exhausted</option>
+              </select>
+            </div>
 
-<h3>Voice Emotion Detection</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Assignments Due</label>
+                <input type="number" id="assignments" min="0" value="2" />
+              </div>
+              <div class="form-group">
+                <label>Exercise (Mins)</label>
+                <input type="number" id="exercise" min="0" value="30" />
+              </div>
+            </div>
 
-<input type="file" id="voiceFile">
+            <button type="submit" class="btn btn-primary w-full" id="predict-btn">
+              Run Prediction Model →
+            </button>
+          </form>
+        </div>
 
-<button onclick="uploadVoice()">Detect Emotion</button>
+        <!-- Result panel -->
+        <div id="result-empty" class="card empty-state">
+          <div class="empty-icon">🧠</div>
+          <h3>Awaiting Input</h3>
+          <p>Enter your metrics to generate a burnout analysis.</p>
+        </div>
 
-<div id="voiceResult"></div>
+        <div id="result-card" class="card" style="display:none">
+          <div id="result-badge" class="badge">LOW RISK</div>
+          <h3 style="margin:12px 0 20px">Analysis Complete</h3>
 
-</div>
+          <div class="meter-row">
+            <div class="meter-box">
+              <p class="meter-label">Stress Risk</p>
+              <p class="meter-val" id="res-stress">0%</p>
+              <div class="progress-bar"><div class="progress-fill purple" id="bar-stress"></div></div>
+            </div>
+            <div class="meter-box">
+              <p class="meter-label">Burnout Risk</p>
+              <p class="meter-val" id="res-burnout">0%</p>
+              <div class="progress-bar"><div class="progress-fill red" id="bar-burnout"></div></div>
+            </div>
+          </div>
 
-<script src="script.js"></script>
+          <div class="message-box" id="res-message"></div>
 
+          <ul class="rec-list" id="rec-list"></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- STUDY PLANNER PAGE -->
+    <div id="page-planner" class="page">
+      <div class="page-header">
+        <div>
+          <h2 class="page-title">Adaptive Planner</h2>
+          <p class="page-sub">Generate a schedule balanced against your stress level.</p>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <h3 class="section-title">📅 Parameters</h3>
+          <form id="planner-form">
+            <div class="form-group">
+              <div class="label-row">
+                <label>Stress Level</label>
+                <span id="stress-val-display" class="accent-text">50%</span>
+              </div>
+              <input type="range" id="stress-range" min="0" max="100" value="50"
+                oninput="document.getElementById('stress-val-display').textContent = this.value + '%'"
+                class="range-input" />
+              <div class="range-labels"><span>Calm</span><span>Exhausted</span></div>
+            </div>
+
+            <div class="form-group">
+              <label>Available Hours</label>
+              <input type="number" id="plan-hours" min="1" max="16" value="4" required />
+            </div>
+
+            <div class="form-group">
+              <label>Subjects (comma-separated)</label>
+              <input type="text" id="subjects" value="Math, Physics, Programming" />
+            </div>
+
+            <button type="submit" class="btn btn-primary w-full" id="plan-btn">
+              Generate Schedule →
+            </button>
+          </form>
+        </div>
+
+        <div id="plan-empty" class="card empty-state">
+          <div class="empty-icon">📚</div>
+          <h3>No Plan Generated</h3>
+          <p>Set your constraints and click Generate.</p>
+        </div>
+
+        <div id="plan-result" style="display:none">
+          <div class="card" style="background:rgba(139,92,246,0.1);border-color:rgba(139,92,246,0.3)">
+            <h3 id="plan-message"></h3>
+            <div class="plan-meta">
+              <span id="plan-total"></span>
+              <span id="plan-breaks"></span>
+            </div>
+          </div>
+          <div id="plan-items"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VOICE EMOTION PAGE -->
+    <div id="page-emotion" class="page">
+      <div class="page-header">
+        <div>
+          <h2 class="page-title">Vocal Emotion Engine</h2>
+          <p class="page-sub">Analyze vocal patterns to detect stress or anxiety.</p>
+        </div>
+      </div>
+
+      <div class="emotion-center">
+        <div class="card emotion-card">
+          <div id="emotion-record">
+            <div class="mic-wrap">
+              <div class="mic-ring"></div>
+              <button id="mic-btn" onclick="detectEmotion()" class="mic-btn">🎙️</button>
+            </div>
+            <h3 id="mic-label">Click to initialize analysis</h3>
+            <p class="text-muted">The model processes acoustic features like pitch, tone, and pacing.</p>
+          </div>
+
+          <div id="emotion-result" style="display:none;text-align:center;width:100%">
+            <span id="emotion-badge" class="badge" style="margin-bottom:16px">ANALYSIS COMPLETE</span>
+            <h2 id="emotion-name" style="font-size:3rem;font-weight:900;margin-bottom:8px"></h2>
+            <p id="emotion-confidence" class="accent-text" style="font-size:1.2rem;margin-bottom:32px"></p>
+            <div class="rec-box">
+              <p class="rec-label">System Recommendation</p>
+              <p id="emotion-rec" style="font-size:1.1rem;color:rgba(255,255,255,0.9)"></p>
+            </div>
+            <button class="btn btn-outline mt-8" onclick="resetEmotion()">🔄 Run New Analysis</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTORY PAGE -->
+    <div id="page-history" class="page">
+      <div class="page-header">
+        <div>
+          <h2 class="page-title">Session History</h2>
+          <p class="page-sub">Review your chronological data and cognitive progression.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <table class="history-table" id="history-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Study</th>
+              <th>Sleep</th>
+              <th>Mood</th>
+              <th>Stress</th>
+              <th>Burnout</th>
+            </tr>
+          </thead>
+          <tbody id="history-body">
+            <tr><td colspan="6" style="text-align:center;padding:40px;opacity:0.5">Loading sessions...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="script.js"></script>
 </body>
-
 </html>
+
