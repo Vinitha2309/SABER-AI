@@ -6,4 +6,4 @@ librosa
 soundfile
 joblib
 flask-cors
-psycopg2-binary
+
