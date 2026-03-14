@@ -1,21 +1,29 @@
 import random
 
-EMOTIONS = ["Calm", "Stressed", "Anxious", "Focused", "Fatigued"]
+def detect_emotion(text=""):
+    emotions = [
+        {
+            "emotion":        "Calm",
+            "recommendation": "You are in a great mental state. Perfect time for focused study."
+        },
+        {
+            "emotion":        "Focused",
+            "recommendation": "High focus detected. Use this state for your hardest subjects."
+        },
+        {
+            "emotion":        "Stressed",
+            "recommendation": "Stress detected. Take a 10 minute break and breathe deeply."
+        },
+        {
+            "emotion":        "Anxious",
+            "recommendation": "Anxiety detected. Try light exercise before studying."
+        },
+        {
+            "emotion":        "Fatigued",
+            "recommendation": "Fatigue detected. Rest before your next study session."
+        }
+    ]
 
-RECOMMENDATIONS = {
-    "Calm":     "You are in a great mental state for studying. Keep your routine.",
-    "Stressed": "Take a 5-minute deep breathing break. Inhale 4 counts, hold 4, exhale 4.",
-    "Anxious":  "Try grounding: name 5 things you see, 4 you touch, 3 you hear.",
-    "Focused":  "Excellent focus! Perfect time for your most challenging tasks.",
-    "Fatigued": "Your body needs rest. Try a 20-minute power nap or a short walk."
-}
-
-def detect_emotion():
-    emotion    = random.choice(EMOTIONS)
-    confidence = random.randint(70, 90)
-
-    return {
-        "emotion":        emotion,
-        "confidence":     confidence,
-        "recommendation": RECOMMENDATIONS[emotion]
-    }
+    result               = random.choice(emotions)
+    result["confidence"] = random.randint(70, 95)
+    return result
