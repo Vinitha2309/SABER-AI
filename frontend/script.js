@@ -1,4 +1,4 @@
-const API = "http://localhost:5000/api";   // ← change to your backend URL
+const API = "http://localhost:5000/api";
 
 // ── PAGE NAVIGATION ──────────────────────────────────────────
 function showPage(name, el) {
@@ -6,12 +6,11 @@ function showPage(name, el) {
   document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
   document.getElementById("page-" + name).classList.add("active");
   if (el) el.classList.add("active");
-
   if (name === "dashboard") loadDashboard();
   if (name === "history")   loadHistory();
 }
 
-// ── DASHBOARD ─────────────────────────────────────────────────
+// ── DASHBOARD ────────────────────────────────────────────────
 async function loadDashboard() {
   try {
     const res      = await fetch(`${API}/sessions`);
@@ -23,18 +22,17 @@ async function loadDashboard() {
       return;
     }
 
-    const latest = sessions[0];   // most recent
+    const latest = sessions[0];
     document.getElementById("dashboard-empty").style.display = "none";
     document.getElementById("dashboard-data").style.display  = "block";
-    document.getElementById("d-stress").textContent = latest.stress_risk  + "%";
-    document.getElementById("d-study").textContent  = latest.study_hours  + " hrs";
-    document.getElementById("d-sleep").textContent  = latest.sleep_hours  + " hrs";
-    document.getElementById("d-mood").textContent   = latest.mood;
+    document.getElementById("d-stress").textContent  = latest.stress_risk  + "%";
+    document.getElementById("d-study").textContent   = latest.study_hours  + " hrs";
+    document.getElementById("d-sleep").textContent   = latest.sleep_hours  + " hrs";
+    document.getElementById("d-mood").textContent    = latest.mood;
     document.getElementById("d-burnout").textContent = latest.burnout_risk + "%";
 
-    // Animate gauge
     const circle = document.getElementById("gauge-circle");
-    const circ   = 2 * Math.PI * 80;   // circumference
+    const circ   = 2 * Math.PI * 80;
     const offset = circ - (latest.burnout_risk / 100) * circ;
     circle.style.strokeDashoffset = offset;
     const c = latest.burnout_risk > 70 ? "#f43f5e" : latest.burnout_risk > 40 ? "#f59e0b" : "#10b981";
@@ -43,45 +41,51 @@ async function loadDashboard() {
   } catch (err) { console.error("Dashboard load failed:", err); }
 }
 
-// ── STRESS PREDICTOR ──────────────────────────────────────────
+// ── STRESS PREDICTOR ─────────────────────────────────────────
 document.getElementById("stress-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const btn = document.getElementById("predict-btn");
-  btn.disabled   = true;
+  btn.disabled    = true;
   btn.textContent = "Analyzing...";
 
   const body = {
     studyHours:      parseFloat(document.getElementById("study-hours").value),
     sleepHours:      parseFloat(document.getElementById("sleep-hours").value),
     mood:            document.getElementById("mood").value,
-    assignmentsDue:  parseInt(document.getElementById("assignments").value) || 0,
-    exerciseMinutes: parseInt(document.getElementById("exercise").value) || 0
+    assignmentsDue:  parseInt(document.getElementById("assignments").value)  || 0,
+    exerciseMinutes: parseInt(document.getElementById("exercise").value)     || 0
   };
 
   try {
-    const res    = await fetch(`${API}/predict-stress`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const res = await fetch(`${API}/predict-stress`, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify(body)
+    });
     const result = await res.json();
     showResult(result, body);
-
-    // Auto-save session
-    await fetch(`${API}/sessions`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        studyHours:  body.studyHours,
-        sleepHours:  body.sleepHours,
-        mood:        body.mood,
-        stressRisk:  result.stressRisk,
-        burnoutRisk: result.burnoutRisk
-      })
-    });
-
   } catch (err) {
     alert("Prediction failed. Is the backend running?");
     console.error(err);
   }
 
-  btn.disabled   = false;
+  try {
+    await fetch(`${API}/sessions`, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        studyHours:  body.studyHours,
+        sleepHours:  body.sleepHours,
+        mood:        body.mood,
+        stressRisk:  0,
+        burnoutRisk: 0
+      })
+    });
+  } catch (err) {
+    console.error("Session save failed:", err);
+  }
+
+  btn.disabled    = false;
   btn.textContent = "Run Prediction Model →";
 });
 
@@ -107,11 +111,11 @@ function showResult(r, input) {
   list.innerHTML = r.recommendations.map(rec => `<li>${rec}</li>`).join("");
 }
 
-// ── STUDY PLANNER ─────────────────────────────────────────────
+// ── STUDY PLANNER ────────────────────────────────────────────
 document.getElementById("planner-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const btn = document.getElementById("plan-btn");
-  btn.disabled   = true;
+  btn.disabled    = true;
   btn.textContent = "Generating...";
 
   const subjects = document.getElementById("subjects").value
@@ -120,64 +124,83 @@ document.getElementById("planner-form").addEventListener("submit", async (e) => 
   const body = {
     stressLevel:    parseInt(document.getElementById("stress-range").value),
     availableHours: parseFloat(document.getElementById("plan-hours").value),
-    subjects
+    subjects:       subjects
   };
 
   try {
-    const res  = await fetch(`${API}/study-plan`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const res = await fetch(`${API}/generate-plan`, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify(body)
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || "Server error");
+    }
+
     const plan = await res.json();
     showPlan(plan);
   } catch (err) {
-    alert("Failed to generate plan.");
+    alert("Failed to generate plan. Error: " + err.message);
     console.error(err);
   }
 
-  btn.disabled   = false;
+  btn.disabled    = false;
   btn.textContent = "Generate Schedule →";
 });
 
 function showPlan(plan) {
-  document.getElementById("plan-empty").style.display  = "none";
+  document.getElementById("plan-empty").style.display = "none";
   const result = document.getElementById("plan-result");
   result.style.display = "block";
 
-  document.getElementById("plan-message").textContent = plan.message;
-  document.getElementById("plan-total").textContent   = "⏱ Total: " + plan.totalStudyTime;
-  document.getElementById("plan-breaks").textContent  = "☕ Breaks: " + plan.breakFrequency;
+  document.getElementById("plan-message").textContent = plan.recommendation || "";
+  document.getElementById("plan-total").textContent   = "⏱ Total: " + plan.totalStudyTime + " mins";
+  document.getElementById("plan-breaks").textContent  = "☕ Break: " + plan.breakDuration  + " mins between sessions";
 
-  const colors = { high: "#f43f5e", medium: "#f59e0b", low: "#10b981" };
-  document.getElementById("plan-items").innerHTML = plan.items.map((item, i) => `
+  const colors = { Focused: "#10b981", Moderate: "#f59e0b", Light: "#f43f5e" };
+  const color  = colors[plan.intensity] || "#a855f7";
+
+  document.getElementById("plan-items").innerHTML = plan.schedule.map((item) => `
     <div class="plan-item">
       <div class="plan-item-left">
-        <div class="plan-num">${i + 1}</div>
+        <div class="plan-num">${item.slot}</div>
         <div>
           <div class="plan-subject">${item.subject}</div>
-          <div class="plan-duration">⏰ ${item.duration}</div>
+          <div class="plan-duration">⏰ ${item.start} – ${item.end} (${item.duration} mins)</div>
         </div>
       </div>
-      <span class="badge" style="background:${colors[item.priority]}22;color:${colors[item.priority]};border:1px solid ${colors[item.priority]}44">
-        ${item.priority}
+      <span class="badge" style="background:${color}22;color:${color};border:1px solid ${color}44">
+        ${item.type}
       </span>
     </div>
   `).join("");
 }
 
-// ── VOICE EMOTION ─────────────────────────────────────────────
+// ── VOICE EMOTION ────────────────────────────────────────────
 async function detectEmotion() {
   const btn   = document.getElementById("mic-btn");
   const label = document.getElementById("mic-label");
-  btn.disabled   = true;
-  btn.textContent = "⏳";
+  btn.disabled      = true;
+  btn.textContent   = "⏳";
   label.textContent = "Analyzing vocal patterns...";
 
   try {
-    const res    = await fetch(`${API}/detect-emotion`, { method: "POST" });
+    const res = await fetch(`${API}/detect-emotion`, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ text: "analyzing" })
+    });
+
+    if (!res.ok) throw new Error("Server error " + res.status);
     const result = await res.json();
     showEmotion(result);
+
   } catch (err) {
-    alert("Emotion detection failed.");
-    btn.disabled = false;
-    btn.textContent = "🎙️";
+    alert("Emotion detection failed. Is backend running?");
+    btn.disabled      = false;
+    btn.textContent   = "🎙️";
     label.textContent = "Click to initialize analysis";
     console.error(err);
   }
@@ -190,7 +213,7 @@ function showEmotion(r) {
 
   const colors = { Calm:"#10b981", Focused:"#10b981", Stressed:"#f43f5e", Anxious:"#f59e0b", Fatigued:"#f59e0b" };
   const badge  = document.getElementById("emotion-badge");
-  badge.textContent = "ANALYSIS COMPLETE";
+  badge.textContent      = "ANALYSIS COMPLETE";
   badge.style.background = colors[r.emotion] + "22";
   badge.style.color      = colors[r.emotion];
   badge.style.border     = `1px solid ${colors[r.emotion]}44`;
@@ -208,7 +231,7 @@ function resetEmotion() {
   document.getElementById("mic-label").textContent        = "Click to initialize analysis";
 }
 
-// ── HISTORY ───────────────────────────────────────────────────
+// ── HISTORY ──────────────────────────────────────────────────
 async function loadHistory() {
   const tbody = document.getElementById("history-body");
   tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;opacity:0.5">Loading...</td></tr>`;
@@ -226,10 +249,10 @@ async function loadHistory() {
     tbody.innerHTML = sessions.map(s => `
       <tr>
         <td>${new Date(s.created_at || s.createdAt).toLocaleString()}</td>
-        <td>${s.study_hours || s.studyHours} hrs</td>
-        <td>${s.sleep_hours || s.sleepHours} hrs</td>
+        <td>${s.study_hours  || s.studyHours}  hrs</td>
+        <td>${s.sleep_hours  || s.sleepHours}  hrs</td>
         <td style="text-transform:capitalize">${s.mood}</td>
-        <td><span style="color:${colors(s.stress_risk || s.stressRisk)};font-weight:700">${s.stress_risk || s.stressRisk}%</span></td>
+        <td><span style="color:${colors(s.stress_risk  || s.stressRisk)};font-weight:700">${s.stress_risk  || s.stressRisk}%</span></td>
         <td><span style="color:${colors(s.burnout_risk || s.burnoutRisk)};font-weight:700">${s.burnout_risk || s.burnoutRisk}%</span></td>
       </tr>
     `).join("");
@@ -240,5 +263,4 @@ async function loadHistory() {
   }
 }
 
-// Load dashboard on start
 loadDashboard();
