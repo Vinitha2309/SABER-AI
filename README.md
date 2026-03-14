@@ -66,27 +66,9 @@ Open frontend/index.html in your browser directly, or use Live Server in VS Code
 🚀 Quick Start (Windows)
 Double click start.bat in the main folder. It automatically starts the backend and opens the app in your browser.
 
-🔌 API Endpoints
-Method	Endpoint	Description
-POST	/api/predict-stress	Predicts stress and burnout risk
-POST	/api/generate-plan	Generates an adaptive study schedule
-POST	/api/detect-emotion	Detects current emotional state
-GET	/api/sessions	Retrieves all saved sessions
-POST	/api/sessions	Saves a new session
 
 🗄️ Database
 The project uses SQLite — no setup required. The database file saber_ai.db is created automatically when you first run python app.py.
-
-Sessions Table Schema
-Column	Type	Description
-id	INTEGER	Auto-increment primary key
-study_hours	REAL	Hours studied per day
-sleep_hours	REAL	Hours slept last night
-mood	TEXT	Current mood (happy, neutral, sad, anxious, angry)
-stress_risk	REAL	Predicted stress risk percentage
-burnout_risk	REAL	Predicted burnout risk percentage
-emotion	TEXT	Detected emotion from voice analysis
-created_at	TEXT	Timestamp of the session
 
 🧠 How the Stress Algorithm Works
 The stress prediction uses a scoring system based on three factors:
@@ -116,9 +98,10 @@ Total score = Stress Risk %. Burnout Risk = Stress Risk × 0.9
 The planner adjusts session duration based on your stress level:
 
 Stress Level	Session Duration	Break	Intensity
-High (70%+)	25 minutes	10 min	Light
-Medium (40-70%)	35 minutes	8 min	Moderate
-Low (under 40%)	50 minutes	10 min	Focused
+
+High (70%+)	25 minutes	10 min	Light,
+Medium (40-70%)	35 minutes	8 min	Moderate,
+Low (under 40%)	50 minutes	10 min	Focused.
 
 🎭 Emotion Detection
 The Voice Emotion feature analyzes your current state and returns one of five emotions:
