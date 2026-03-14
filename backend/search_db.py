@@ -29,3 +29,4 @@ if avg:
     print(f"📊 Average stress risk: {avg:.1f}%")
 
 conn.close()
+
