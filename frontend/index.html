@@ -6,6 +6,24 @@
   <title>SABER-AI — Student Burnout Prevention</title>
   <link rel="stylesheet" href="style.css" />
 </head>
+<button onclick="testPlan()" style="position:fixed;bottom:20px;right:20px;z-index:999;padding:10px;background:red;color:white">
+  TEST PLAN
+</button>
+<script>
+async function testPlan() {
+  try {
+    const res = await fetch("http://127.0.0.1:5000/api/generate-plan", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ stressLevel: 50, availableHours: 4, subjects: ["Math"] })
+    });
+    const data = await res.json();
+    alert("SUCCESS: " + JSON.stringify(data).slice(0, 200));
+  } catch(e) {
+    alert("FAILED: " + e.message);
+  }
+}
+</script>
 <body>
 
   <!-- ── SIDEBAR ──────────────────────────────────────── -->
@@ -325,4 +343,5 @@
   <script src="script.js"></script>
 </body>
 </html>
+
 
