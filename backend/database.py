@@ -1,3 +1,6 @@
+import sqlite3
+import os
+
 DB_FILE = "saber_ai.db"
 
 def get_connection():
