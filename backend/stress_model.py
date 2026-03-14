@@ -1,17 +1,13 @@
-def predict_stress(study_hours, sleep_hours, mood,
-                   assignments_due=0, exercise_minutes=0):
-
+def predict_stress(study_hours, sleep_hours, mood):
     score = 0
 
-    # Study load factor
-    if study_hours > 8:
-        score += 35
-    elif study_hours > 6:
+    if study_hours > 10:
+        score += 40
+    elif study_hours > 7:
         score += 20
-    elif study_hours > 4:
+    elif study_hours > 5:
         score += 10
 
-    # Sleep deficit factor
     if sleep_hours < 5:
         score += 40
     elif sleep_hours < 6:
@@ -19,55 +15,45 @@ def predict_stress(study_hours, sleep_hours, mood,
     elif sleep_hours < 7:
         score += 10
 
-    # Mood factor
-    if mood == "sad":
-        score += 25
-    elif mood == "neutral":
-        score += 10
+    mood_scores = {
+        "happy":   0,
+        "neutral": 10,
+        "sad":     25,
+        "anxious": 35,
+        "angry":   30
+    }
+    score += mood_scores.get(mood.lower(), 10)
 
-    # Assignment pressure
-    if assignments_due > 3:
-        score += 20
-    elif assignments_due > 1:
-        score += 10
+    stress_risk  = min(score, 100)
+    burnout_risk = min(int(stress_risk * 0.9), 100)
 
-    # Exercise relief
-    if exercise_minutes > 30:
-        score -= 10
-    elif exercise_minutes > 15:
-        score -= 5
-
-    stress_risk  = max(0, min(score, 100))
-    burnout_risk = max(0, min(stress_risk + (10 if study_hours > 6 else -5), 100))
-
-    # Determine level
-    if stress_risk < 30:
-        level = "low"
-        message = "You are managing stress well!"
-    elif stress_risk < 55:
-        level = "medium"
-        message = "Moderate stress detected — take small breaks."
-    elif stress_risk < 75:
+    if stress_risk >= 70:
         level = "high"
-        message = "High stress level — reduce workload immediately."
+        message = "High burnout risk detected. Immediate action recommended."
+        recommendations = [
+            "Reduce study hours to under 6 per day",
+            "Get at least 8 hours of sleep tonight",
+            "Take a 30 minute break every 2 hours",
+            "Talk to a counselor or trusted friend"
+        ]
+    elif stress_risk >= 40:
+        level = "medium"
+        message = "Moderate stress levels. Monitor your wellbeing."
+        recommendations = [
+            "Aim for 7 to 8 hours of sleep",
+            "Include short breaks in your study sessions",
+            "Try light exercise or a short walk",
+            "Eat regular healthy meals"
+        ]
     else:
-        level = "critical"
-        message = "Critical burnout risk — take a full rest day!"
-
-    # Build recommendations
-    recommendations = []
-    if sleep_hours < 7:
-        recommendations.append("Aim for 7–9 hours of sleep per night")
-    if study_hours > 6:
-        recommendations.append("Use the Pomodoro technique (25 min study, 5 min break)")
-    if mood == "sad":
-        recommendations.append("Practice mindfulness or meditation for 10 minutes daily")
-    if exercise_minutes < 20:
-        recommendations.append("Add at least 20–30 minutes of physical activity to your day")
-    if assignments_due > 2:
-        recommendations.append("Prioritize tasks using the Eisenhower matrix")
-    if not recommendations:
-        recommendations.append("Great job maintaining balance! Keep up the healthy habits.")
+        level = "low"
+        message = "Low stress levels. Keep up the good work!"
+        recommendations = [
+            "Maintain your current sleep schedule",
+            "Continue balanced study habits",
+            "Stay hydrated throughout the day",
+            "Keep your mood positive with activities you enjoy"
+        ]
 
     return {
         "stressRisk":      stress_risk,
