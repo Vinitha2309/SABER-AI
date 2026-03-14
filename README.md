@@ -14,11 +14,11 @@ SABER-AI is a full-stack web application built for students to monitor their men
 
 | Feature & Description |
 
-|Stress Predictor | Analyzes study hours, sleep, and mood to calculate stress and burnout risk |
-| Adaptive Study Planner |Generates a personalized study schedule based on your stress level and available time |
-| Voice Emotion Detection | Detects your emotional state and provides study recommendations |
-| Session History |Tracks all your past sessions and shows progress over time |
-| Dashboard | Displays your latest stats with visual burnout gauge |
+|Stress Predictor | Analyzes study hours, sleep, and mood to calculate stress and burnout risk |,
+| Adaptive Study Planner |Generates a personalized study schedule based on your stress level and available time |,
+| Voice Emotion Detection | Detects your emotional state and provides study recommendations |,
+| Session History |Tracks all your past sessions and shows progress over time |,
+| Dashboard | Displays your latest stats with visual burnout gauge |.
 
 ---
  🛠️ Tech Stack
@@ -35,9 +35,8 @@ SABER-AI is a full-stack web application built for students to monitor their men
 
 ## 📁 Project Structure
 SABER-AI/
-├── backend/
-│ ├── app.py ← Flask server and API routes
-│ ├── database.py ← SQLite database connection and queries
+├── backend/│
+├── database.py ← SQLite database connection and queries
 │ ├── stress_model.py ← Stress and burnout prediction algorithm
 │ ├── study_planner.py ← Adaptive study schedule generator
 │ ├── voice_emotion.py ← Emotion detection logic
@@ -94,14 +93,16 @@ The stress prediction uses a scoring system based on three factors:
 
 Study Hours Score:
 
-More than 10 hours → +40 points
-7 to 10 hours → +20 points
-5 to 7 hours → +10 points
+More than 10 hours → +40 points,
+7 to 10 hours → +20 points,
+5 to 7 hours → +10 points.
+
 Sleep Hours Score:
 
-Less than 5 hours → +40 points
-5 to 6 hours → +25 points
-6 to 7 hours → +10 points
+Less than 5 hours → +40 points,
+5 to 6 hours → +25 points,
+6 to 7 hours → +10 points.
+
 Mood Score:
 
 Happy → +0 points
@@ -118,14 +119,15 @@ Stress Level	Session Duration	Break	Intensity
 High (70%+)	25 minutes	10 min	Light
 Medium (40-70%)	35 minutes	8 min	Moderate
 Low (under 40%)	50 minutes	10 min	Focused
+
 🎭 Emotion Detection
 The Voice Emotion feature analyzes your current state and returns one of five emotions:
 
-Calm — Great for focused study
-Focused — Perfect for difficult subjects
-Stressed — Recommends short breaks
-Anxious — Recommends light exercise first
-Fatigued — Recommends rest before studying
+Calm — Great for focused study,
+Focused — Perfect for difficult subjects,
+Stressed — Recommends short breaks,
+Anxious — Recommends light exercise first,
+Fatigued — Recommends rest before studying.
 
 
 👩‍💻 Development
