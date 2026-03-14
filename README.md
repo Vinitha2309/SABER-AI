@@ -14,21 +14,21 @@ SABER-AI is a full-stack web application built for students to monitor their men
 
 | Feature & Description |
 
-|Stress Predictor - Analyzes study hours, sleep, and mood to calculate stress and burnout risk |
-| Adaptive Study Planner - Generates a personalized study schedule based on your stress level and available time |
-| Voice Emotion Detection - Detects your emotional state and provides study recommendations |
-| Session History - Tracks all your past sessions and shows progress over time |
-| Dashboard - Displays your latest stats with visual burnout gauge |
+|Stress Predictor | Analyzes study hours, sleep, and mood to calculate stress and burnout risk |
+| Adaptive Study Planner |Generates a personalized study schedule based on your stress level and available time |
+| Voice Emotion Detection | Detects your emotional state and provides study recommendations |
+| Session History |Tracks all your past sessions and shows progress over time |
+| Dashboard | Displays your latest stats with visual burnout gauge |
 
 ---
  🛠️ Tech Stack
 
 | Layer | Technology |
 |-------|------------|
-| Frontend - HTML, CSS, JavaScript |
-| Backend - Python, Flask, Flask-CORS |
-| Database - SQLite (saber_ai.db) |
-| Charts - CSS animations and SVG gauge |
+| Frontend | HTML, CSS, JavaScript |
+| Backend | Python, Flask, Flask-CORS |
+| Database | SQLite (saber_ai.db) |
+| Charts | CSS animations and SVG gauge |
 
 ---
 
